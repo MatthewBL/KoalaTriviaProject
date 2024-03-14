@@ -1,6 +1,8 @@
 package com.example.myapplication;
 
+import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -10,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,8 +29,27 @@ public class MainActivity extends AppCompatActivity {
     private Button button4;
     private String correctAnswer;
     private Question questionObject;
+    private boolean stopControl = false;
+    private TextView score;
+    private TextView timer;
+    private TextView wrong;
 
     private Set<Integer> usedIndexes = new HashSet<>();
+
+    private int scoreValue = 0;
+    private int wrongCount = 0;
+    private int secondsPassed = 0;
+    private Handler timerHandler = new Handler();
+    private Runnable timerRunnable = new Runnable() {
+        @Override
+        public void run() {
+            secondsPassed++;
+            int minutes = secondsPassed / 60;
+            int seconds = secondsPassed % 60;
+            timer.setText(String.format("%02d:%02d", minutes, seconds));
+            timerHandler.postDelayed(this, 1000);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,8 +64,15 @@ public class MainActivity extends AppCompatActivity {
         button3 = findViewById(R.id.button3);
         button4 = findViewById(R.id.button4);
 
-        regenerateQuestion();
+        score = findViewById(R.id.score);
+        timer = findViewById(R.id.timer);
+        wrong = findViewById(R.id.wrong);
 
+        score.setText("0");
+        timer.setText("00:00");
+        wrong.setText("0");
+
+        regenerateQuestion();
         button1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -72,14 +101,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        timerHandler.postDelayed(timerRunnable, 1000);
     }
 
     void regenerateQuestion() {
         questionObject = getRandomQuestion(Constants.questions);
-        setQuestionText(question.getQuestion());
-        setImage(question.getImageId());
-        setButtonText(question.getAnswers());
-        correctAnswer = question.getCorrectAnswer();
+        setQuestionText(questionObject.getQuestion());
+        setImage(questionObject.getImageId());
+        setButtonText(questionObject.getAnswers());
+        correctAnswer = questionObject.getCorrectAnswer();
     }
 
     Question getRandomQuestion(Question[] questions) {
@@ -105,7 +135,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Method to change the image displayed
-    void setImage(int resourceId) {
+    void setImage(String imageName) {
+        int resourceId = getResources().getIdentifier(imageName, "drawable", getPackageName());
         image.setImageResource(resourceId);
     }
 
@@ -120,73 +151,73 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void handleButtonClick(final String selectedAnswer, final String correctAnswer) {
-        // Store original colors of the buttons
-        final Drawable originalDrawableButton1 = button1.getBackground();
-        final Drawable originalDrawableButton2 = button2.getBackground();
-        final Drawable originalDrawableButton3 = button3.getBackground();
-        final Drawable originalDrawableButton4 = button4.getBackground();
-
-        // Extracting the color from the Drawables
-        final int originalColorButton1 = ((ColorDrawable) originalDrawableButton1).getColor();
-        final int originalColorButton2 = ((ColorDrawable) originalDrawableButton2).getColor();
-        final int originalColorButton3 = ((ColorDrawable) originalDrawableButton3).getColor();
-        final int originalColorButton4 = ((ColorDrawable) originalDrawableButton4).getColor();
-
+        if (stopControl) {
+            return;
+        }
+        // Store the colors
+        ColorStateList backgroundTint1 = button1.getBackgroundTintList();
+        ColorStateList backgroundTint2 = button2.getBackgroundTintList();
+        ColorStateList backgroundTint3 = button3.getBackgroundTintList();
+        ColorStateList backgroundTint4 = button4.getBackgroundTintList();
         // Check if selected answer is correct
         boolean isCorrect = (selectedAnswer == correctAnswer);
         // Change color of the right answer to green
-        switch (questionObject.findAnswerIndex(correctAnswer)) {
+        switch (questionObject.findAnswerIndex(correctAnswer) + 1) {
             case 1:
-                button1.setBackgroundColor(Color.GREEN);
+                button1.setBackgroundTintList(ColorStateList.valueOf(Color.GREEN));
                 break;
             case 2:
-                button2.setBackgroundColor(Color.GREEN);
+                button2.setBackgroundTintList(ColorStateList.valueOf(Color.GREEN));
                 break;
             case 3:
-                button3.setBackgroundColor(Color.GREEN);
+                button3.setBackgroundTintList(ColorStateList.valueOf(Color.GREEN));
                 break;
             case 4:
-                button4.setBackgroundColor(Color.GREEN);
+                button4.setBackgroundTintList(ColorStateList.valueOf(Color.GREEN));
                 break;
         }
         // Change chosen button to red if it's wrong
         if (!isCorrect) {
-            switch (questionObject.findAnswerIndex(selectedAnswer)) {
+            switch (questionObject.findAnswerIndex(selectedAnswer) + 1) {
                 case 1:
-                    button1.setBackgroundColor(Color.RED);
+                    button1.setBackgroundTintList(ColorStateList.valueOf(Color.RED));
                     break;
                 case 2:
-                    button2.setBackgroundColor(Color.RED);
+                    button2.setBackgroundTintList(ColorStateList.valueOf(Color.RED));
                     break;
                 case 3:
-                    button3.setBackgroundColor(Color.RED);
+                    button3.setBackgroundTintList(ColorStateList.valueOf(Color.RED));
                     break;
                 case 4:
-                    button4.setBackgroundColor(Color.RED);
+                    button4.setBackgroundTintList(ColorStateList.valueOf(Color.RED));
                     break;
             }
         }
 
+        stopControl = true;
         // Set a delay to reset button colors after 3 seconds
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 // Reset button colors to their original colors
-                button1.setBackgroundColor(originalColorButton1);
-                button2.setBackgroundColor(originalColorButton2);
-                button3.setBackgroundColor(originalColorButton3);
-                button4.setBackgroundColor(originalColorButton4);
+                button1.setBackgroundTintList(backgroundTint1);
+                button2.setBackgroundTintList(backgroundTint2);
+                button3.setBackgroundTintList(backgroundTint3);
+                button4.setBackgroundTintList(backgroundTint4);
 
                 // Regenerate question after resetting button colors
                 regenerateQuestion();
+                stopControl = false;
             }
         }, 3000);
 
         // Show toast message based on correctness
         if (isCorrect) {
-            Toast.makeText(getApplicationContext(), "Correct answer!", Toast.LENGTH_SHORT).show();
+            scoreValue++;
+            score.setText(String.valueOf(scoreValue));
         } else {
-            Toast.makeText(getApplicationContext(), "Incorrect answer! Correct answer is: " + correctAnswer, Toast.LENGTH_SHORT).show();
+            wrongCount++;
+            wrong.setText(String.valueOf(wrongCount));
         }
     }
 }

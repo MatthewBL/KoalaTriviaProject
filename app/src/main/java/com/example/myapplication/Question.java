@@ -8,10 +8,10 @@ public class Question {
     private String question;
     private String[] answers;
     private String correctAnswer;
-    private int imageId;
+    private String imageId;
 
     // Constructor
-    public Question(String question, String[] answers, String correctAnswer, int imageId) {
+    public Question(String question, String[] answers, String correctAnswer, String imageId) {
         this.question = question;
         this.answers = answers;
         this.correctAnswer = correctAnswer;
@@ -31,7 +31,7 @@ public class Question {
         return correctAnswer;
     }
 
-    public int getImageId() {
+    public String getImageId() {
         return imageId;
     }
 
@@ -48,7 +48,7 @@ public class Question {
         this.correctAnswer = correctAnswer;
     }
 
-    public void setImageId(int imageId) {
+    public void setImageId(String imageId) {
         this.imageId = imageId;
     }
 
