@@ -8,14 +8,14 @@ public class Question {
     private String question;
     private String[] answers;
     private String correctAnswer;
-    private String imageId;
+    private String imageUrl;
 
     // Constructor
-    public Question(String question, String[] answers, String correctAnswer, String imageId) {
+    public Question(String question, String[] answers, String correctAnswer, String imageUrl) {
         this.question = question;
         this.answers = answers;
         this.correctAnswer = correctAnswer;
-        this.imageId = imageId;
+        this.imageUrl = imageUrl;
     }
 
     // Getters
@@ -31,8 +31,8 @@ public class Question {
         return correctAnswer;
     }
 
-    public String getImageId() {
-        return imageId;
+    public String getImageUrl() {
+        return imageUrl;
     }
 
     // Setters
@@ -48,8 +48,8 @@ public class Question {
         this.correctAnswer = correctAnswer;
     }
 
-    public void setImageId(String imageId) {
-        this.imageId = imageId;
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     // Method to shuffle the answers

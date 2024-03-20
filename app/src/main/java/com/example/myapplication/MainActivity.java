@@ -2,22 +2,20 @@ package com.example.myapplication;
 
 import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
+
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
 import androidx.appcompat.app.AppCompatActivity;
-import com.example.myapplication.Question;
-import com.example.myapplication.Constants;
+
+import com.squareup.picasso.Picasso;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -107,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
     void regenerateQuestion() {
         questionObject = getRandomQuestion(Constants.questions);
         setQuestionText(questionObject.getQuestion());
-        setImage(questionObject.getImageId());
+        setImage(questionObject.getImageUrl());
         setButtonText(questionObject.getAnswers());
         correctAnswer = questionObject.getCorrectAnswer();
     }
@@ -135,9 +133,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Method to change the image displayed
-    void setImage(String imageName) {
-        int resourceId = getResources().getIdentifier(imageName, "drawable", getPackageName());
-        image.setImageResource(resourceId);
+    void setImage(String imageUrl) {
+        Picasso.get()
+                .load(imageUrl)
+                .error(R.drawable.error)
+                .into(image);
     }
 
     // Method to change the button text displayed
@@ -211,7 +211,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }, 3000);
 
-        // Show toast message based on correctness
         if (isCorrect) {
             scoreValue++;
             score.setText(String.valueOf(scoreValue));
