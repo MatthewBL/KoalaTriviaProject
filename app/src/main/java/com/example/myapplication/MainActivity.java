@@ -1,5 +1,6 @@
 package com.example.myapplication;
 
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -106,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
         questionObject = getRandomQuestion(Constants.questions);
         setQuestionText(questionObject.getQuestion());
         setImage(questionObject.getImageUrl());
+        questionObject.shuffleAnswers();
         setButtonText(questionObject.getAnswers());
         correctAnswer = questionObject.getCorrectAnswer();
     }
@@ -118,11 +120,6 @@ public class MainActivity extends AppCompatActivity {
         } while (usedIndexes.contains(randomIndex));
 
         usedIndexes.add(randomIndex);
-
-        if (usedIndexes.size() == questions.length) {
-            // If all questions have been used, clear the set to start over
-            usedIndexes.clear();
-        }
 
         return questions[randomIndex];
     }
@@ -217,6 +214,15 @@ public class MainActivity extends AppCompatActivity {
         } else {
             wrongCount++;
             wrong.setText(String.valueOf(wrongCount));
+        }
+
+        if (usedIndexes.size() == Constants.questions.length) {
+            Intent intent = new Intent(MainActivity.this, EndActivity.class);
+            intent.putExtra("result", scoreValue >= Math.ceil((float) Constants.questions.length/2));
+            intent.putExtra("time", secondsPassed);
+            intent.putExtra("score", scoreValue);
+            startActivity(intent);
+            finish();
         }
     }
 }
