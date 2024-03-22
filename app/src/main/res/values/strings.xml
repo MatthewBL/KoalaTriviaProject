@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">My Application</string>
+    <string name="app_name">Koala Trivia</string>
     <string name="question1">¿Son los koalas osos o marsupiales?</string>
 </resources>
