@@ -217,6 +217,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (usedIndexes.size() == Constants.questions.length) {
+            usedIndexes.clear();
             Intent intent = new Intent(MainActivity.this, EndActivity.class);
             intent.putExtra("result", scoreValue >= Math.ceil((float) Constants.questions.length/2));
             intent.putExtra("time", secondsPassed);
